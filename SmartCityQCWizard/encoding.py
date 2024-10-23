@@ -2,8 +2,10 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
-from qibo.symbols import Z
+from qibo.symbols import Z, I, X
 from qibo import hamiltonians, set_backend
+from qibo import Circuit, gates
+from qibo.models import AdiabaticEvolution
 
 set_backend("numpy")
 
@@ -34,12 +36,51 @@ nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', no
 plt.title("Graph Topology")
 plt.savefig("./figures/topology.png")
 
+
+# initial hamiltonian
+
+def construct_H0(graph, node_a, node_b):
+    """Initial Hamiltonian"""
+    symbolic_ham = Z(node_a)
+    symbolic_ham += Z(node_b)
+    for i in range(len(graph.nodes)):
+        if i not in [node_a, node_b]:
+            symbolic_ham -= Z(i)
+    return hamiltonians.SymbolicHamiltonian(symbolic_ham)
+
+def construct_H1(graph, params, node_a, node_b):
+    """Target Hamiltonian"""
+    # constraint 1: no isolated flips
+    # constraint 2: not to touch a node twice
+    # constraint 3: path length
+    symbolic_ham = sum((params[i] * (Z(edge[0]) * Z(edge[1]) - 1)) for i, edge in enumerate(graph.edges))
+    
+
+node_a = 2
+node_b = 7
+
+h0 = construct_H0(G, node_a, node_b)
+
+print("Expectation value on its ground state: ", h0.expectation(h0.ground_state()))
+
+c = Circuit(len(G.nodes)+1)
+c.add(gates.X(node_a))
+c.add(gates.X(node_b))
+
+print("Expectation value on the circuit state: ", h0.expectation(c().state()))
+
 nedges = len(G.edges)
 
-# TODO: this is random now but has to encode the traffic data
-params = np.random.uniform(0, 1, nedges)
 
-symbolic_ham = sum((params[i] * Z(edge[0]) * Z(edge[1])) for i, edge in enumerate(G.edges))
-ham = hamiltonians.SymbolicHamiltonian(symbolic_ham)
+evo = AdiabaticEvolution(
+    h0 = h0,
+    h1 = h1,
+    s = lambda t: t,
+    dt = 0.01,
+)
+
+evolved = evo(T)
+
+
 
 
