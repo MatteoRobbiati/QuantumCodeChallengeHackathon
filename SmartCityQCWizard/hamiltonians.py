@@ -1,9 +1,10 @@
+from math import prod
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
 from qibo.symbols import Z, I, X
-from qibo import hamiltonians, set_backend
+from qibo import hamiltonians, set_backend, Backend
 from qibo import Circuit, gates
 from qibo.models import AdiabaticEvolution
 
@@ -36,6 +37,33 @@ nx.draw(G, pos, with_labels=True, node_color='lightblue', font_weight='bold', no
 plt.title("Graph Topology")
 plt.savefig("./figures/topology.png")
 
+
+def H0_TSP(nqubits: int, backend: Backend):
+    return hamiltonians.SymbolicHamiltonian(
+        prod([X(i) for i in range(nqubits)]),
+        nqubits=nqubits,
+        backend=backend
+    )
+
+def H1_TSP(nqubits: int, adj_matrix: "ndarray", backend: Backend, lagrange_mul: "ndarray" = None):
+    terms = []
+    for i in range(nqubits - 1):
+        for j in range(i + 1, nqubits):
+            terms.append(adj_matrix[i,j] * X(i) * X(j))
+
+    if lagrange_mul is None:
+        lagrange_mul = backend.np.ones(nqubits)
+    for i in range(nqubits):
+        terms.append(
+            lagrange_mul[i] *
+            sum([(2 - X(i) * X(j)) ** 2 for j in range(nqubits) if j != i])
+            )
+    return hamiltonians.SymbolicHamiltonian(
+        sum(terms),
+        nqubits=nqubits,
+        backend=backend
+    )
+            
 
 # initial hamiltonian
 
