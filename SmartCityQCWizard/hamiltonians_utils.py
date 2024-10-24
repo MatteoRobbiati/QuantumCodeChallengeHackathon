@@ -4,7 +4,7 @@ from qibo.symbols import I, X, Z
 # initial hamiltonian
 def construct_H0(graph):
     """Initial Hamiltonian"""
-    symb = sum(-X(i) for i in range(0, len(graph.nodes), 1))
+    symb = sum(-X(i) for i in range(0, len(graph.nodes)))
     return hamiltonians.SymbolicHamiltonian(symb)
 
 def construct_H1(graph, adjacency_matrix):

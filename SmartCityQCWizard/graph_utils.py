@@ -36,12 +36,11 @@ def color_graph_by_bitstring(G, bitstring, figname, weights):
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, label_pos=0.5, font_size=12)  # label_pos=0.5 places them at the middle of the edges
     
     # Save the figure
-    plt.savefig(figname)
-    plt.show()
+    plt.savefig(f"./figures/{figname}.png")
 
 
 
-def construct_graph(edges):
+def construct_graph(edges, weights):
     """
     Construct graph and adjacency matrix given edges list.
     
@@ -58,8 +57,6 @@ def construct_graph(edges):
 
     num_nodes = G.number_of_nodes()
     num_edges = len(G.edges)
-
-    weights = np.random.uniform(0, 5, num_edges)
 
     # Initialize adjacency matrix with high weights
     high_weight = 0
