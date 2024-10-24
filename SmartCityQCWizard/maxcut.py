@@ -44,8 +44,6 @@ h1 = construct_H1(
     adjacency_matrix=adjacency_matrix,
 )
 
-initial_state = h0.ground_state()
-
 energy = callbacks.Energy(h1)
 state = callbacks.State(copy=True)
 
@@ -63,9 +61,12 @@ for q in range(num_nodes):
     c.add(gates.H(q))
 c.add(gates.M(*range(num_nodes)))
 
+print("GS circuit: ", h0.expectation(c().state()))
+
 # evolve
-evolved = evo(final_time=20, initial_state=initial_state)
+evolved = evo(final_time=30, initial_state=c().state())
 idx = np.argmin(energy.results)
+last_idx = np.argmin(energy.results)
 
 # energies plot
 plt.figure(figsize=(8,6))
@@ -83,6 +84,6 @@ max_key = max(freq, key=lambda k: freq[k])
 print(max_key, freq[max_key])
 
 
-color_graph_by_bitstring(G, max_key, figname="final.png")
-color_graph_by_bitstring(G, "111111111111", figname="initial.png")
+color_graph_by_bitstring(G, max_key, figname="final.png", weights=adjacency_matrix)
+color_graph_by_bitstring(G, "111111111111", figname="initial.png", weights=adjacency_matrix)
 
