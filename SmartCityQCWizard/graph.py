@@ -25,9 +25,9 @@ def build_adjacency_matrix(attendance: list) -> np.array:
         attendance (dict): list of the measurements for a given time:
                      [(attendance) area 0, ... area 12, global]
     """
-    if not len(attendance) == 13:
+    if not len(attendance) == 14:
         raise RuntimeError
-    matrix = np.ones((12, 12)) * 1e8
+    matrix = np.ones((13, 13)) * 1e8
     for edge in EDGES:
         i, j = edge[0], edge[1]
         matrix[i, j] = matrix[j, i] = (attendance[i] + attendance[j]) / attendance[-1]
