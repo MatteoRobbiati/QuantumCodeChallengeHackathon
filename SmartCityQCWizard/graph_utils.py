@@ -23,7 +23,7 @@ G.add_nodes_from(range(13))  # Add 13 nodes (from 0 to 12)
 # Add any initial edges as needed to construct the layout (these can be temporary)
 
 # Generate fixed positions for 13 nodes and store them in a dictionary
-fixed_positions = nx.spring_layout(G, seed=4242)  # Setting a seed for reproducibility
+fixed_positions = nx.kamada_kawai_layout(G)  # Setting a seed for reproducibility
 
 def color_graph_by_bitstring(G, bitstring, figname, weights, positions=fixed_positions):
     """
