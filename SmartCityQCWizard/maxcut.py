@@ -118,7 +118,7 @@ h1 = construct_H1(graph=G, adjacency_matrix=adjacency_matrix)
 # Setup callbacks and evolution
 energy = callbacks.Energy(h1)
 state = callbacks.State(copy=True)
-evo = AdiabaticEvolution(h0=h0, h1=h1, s=lambda t: t, dt=0.05, callbacks=[energy, state])
+evo = AdiabaticEvolution(h0=h0, h1=h1, s=lambda t: t, dt=0.025, callbacks=[energy, state])
 
 # Initial state setup
 c = Circuit(num_nodes)
@@ -129,7 +129,7 @@ print("GS circuit: ", h0.expectation(c().state()))
 
 # Run evolution
 inital_time = time.time()
-evolved = evo(final_time=20, initial_state=c().state())
+evolved = evo(final_time=50, initial_state=c().state())
 print(f"\nTotal evolution time: {time.time() - inital_time}")
 
 # Plot and analyze results
