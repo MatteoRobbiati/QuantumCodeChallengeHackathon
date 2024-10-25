@@ -7,6 +7,7 @@ datetime = "2024-08-01 23:45:00"
 
 def zones_data_by_datetime(df, datetime):
     filtered_df = df[df["datetime"] == datetime]
+    print(filtered_df)
     zones_data = {}
     for zone in zones:
         value = filtered_df.loc[filtered_df["areaAnalisi"] == f"Cagliari - {zone}", "value"].values
