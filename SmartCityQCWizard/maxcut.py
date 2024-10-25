@@ -155,7 +155,7 @@ print(f"bitstring best is {bitstring_best} with frequency {freq_best[bitstring_b
 print(f"bitstring init is {bitstring_init} with frequency {freq_best[bitstring_init]}")
 
 # save optimal state
-np.save(arr=np.array(state.results[idx]), file=f"./results/state_{args.datetime}")
+np.save(arr=np.array(state.results[idx]), file=f"./results/state_{"_".join(args.datetime)}")
 
 # Display top states after optimization
 top_10_dict = dict(sorted(freq_best.items(), key=lambda item: item[1], reverse=True)[:10])
