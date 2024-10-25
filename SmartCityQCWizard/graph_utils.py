@@ -2,6 +2,21 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 
+EDGES = [
+    (0, 1), (0, 2), (0, 3), (0, 6), (0, 8), (0, 10), (0, 11), (0, 12),
+    (1, 2), (1, 4), (1, 7), (1, 9), (1, 10),
+    (2, 3), (2, 4),
+    (3, 4),
+    (4, 5), (4, 7),
+    (5, 6), (5, 7),
+    (6, 8), (6, 7),
+    (7, 8), (7, 9),
+    (8, 9), (8, 10),
+    (9, 10),
+    (10, 11),
+    (11, 12)
+]
+
 def color_graph_by_bitstring(G, bitstring, figname, weights):
     """
     Colors the nodes of a graph G based on a bitstring and plots the edge weights on top of the edges.
