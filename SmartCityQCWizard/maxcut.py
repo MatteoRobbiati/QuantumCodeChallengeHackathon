@@ -44,13 +44,15 @@ parser.add_argument(
     "--datetime",
     nargs="+",
     type=str,
-    required=True,
+    default="2024-09-01 23:45:00",
+    # required=True,
     help="The datetime string for filtering the dataset, format: 'YYYY-MM-DD HH:MM:SS'."
 )
 parser.add_argument(
     "--dataset",
     type=str,
-    required=True,
+    default="./unique_attendance_15/presenza_15_010924-140924.csv",
+    # required=True,
     help="Path to the dataset file (CSV format)."
 )
 args = parser.parse_args()
@@ -95,10 +97,10 @@ elif len(zones_data) == 2:
     adjacency_matrix = flux_adj_matrix(*attendances, edges)
     # Construct graph and adjacency matrix
     G, _ = construct_graph(edges=edges, weights=None)
-    
+
 else:
     raise RuntimeError
-    
+
 
 
 num_nodes = G.number_of_nodes()
@@ -135,8 +137,11 @@ print(f"\nTotal evolution time: {time.time() - inital_time}")
 # Plot and analyze results
 idx = np.argmin(energy.results)
 plt.figure(figsize=(8,6))
-plt.plot(energy.results)
-plt.vlines(idx, min(energy.results), max(energy.results), color="black", lw=1)
+plt.plot(energy.results, color="blue", lw="2")
+plt.xlabel("Evolution time")
+plt.ylabel("Energy")
+
+# plt.vlines(idx, min(energy.results), max(energy.results), color="black", lw=1)
 plt.savefig("./figures/energy.png")
 
 # Find and display best and initial bitstrings
