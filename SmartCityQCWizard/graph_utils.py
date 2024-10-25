@@ -31,7 +31,7 @@ def color_graph_by_bitstring(G, bitstring, figname, weights):
     # Ensure edges have 'weight' attributes
     edge_labels = nx.get_edge_attributes(G, 'weight')
     if not edge_labels:  # If no weights exist, set default weights to 1
-        edge_labels = {(u, v): weights[u-1][v-1] for u, v in G.edges()}
+        edge_labels = {(u, v): np.round(weights[u][v], decimals=3) for u, v in G.edges()}
 
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, label_pos=0.5, font_size=12)  # label_pos=0.5 places them at the middle of the edges
     
@@ -40,7 +40,7 @@ def color_graph_by_bitstring(G, bitstring, figname, weights):
 
 
 
-def construct_graph(edges, weights):
+def construct_graph(edges, weights=None):
     """
     Construct graph and adjacency matrix given edges list.
     
@@ -58,16 +58,19 @@ def construct_graph(edges, weights):
     num_nodes = G.number_of_nodes()
     num_edges = len(G.edges)
 
-    # Initialize adjacency matrix with high weights
-    high_weight = 0
-    adjacency_matrix = np.full((num_nodes, num_nodes), high_weight)
+    if weights is not None:
+        # Initialize adjacency matrix with high weights
+        high_weight = 0
+        adjacency_matrix = np.full((num_nodes, num_nodes), high_weight)
+        
+        # Populate the adjacency matrix with weights from the external list
+        for idx, (i, j) in enumerate(G.edges()):
+            adjacency_matrix[i-1, j-1] = weights[idx]  # Use weights from the external list
+            adjacency_matrix[j-1, i-1] = weights[idx]  # Undirected graph: set both (i,j) and (j,i)
 
-    # Populate the adjacency matrix with weights from the external list
-    for idx, (i, j) in enumerate(G.edges()):
-        adjacency_matrix[i-1, j-1] = weights[idx]  # Use weights from the external list
-        adjacency_matrix[j-1, i-1] = weights[idx]  # Undirected graph: set both (i,j) and (j,i)
+        # Optionally set the diagonal to 0 (self-loops with zero weight)
+        np.fill_diagonal(adjacency_matrix, 0)
 
-    # Optionally set the diagonal to 0 (self-loops with zero weight)
-    np.fill_diagonal(adjacency_matrix, 0)
+        return G, adjacency_matrix
 
-    return G, adjacency_matrix
+    return G, None

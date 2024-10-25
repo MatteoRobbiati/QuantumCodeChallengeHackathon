@@ -13,13 +13,36 @@ from graph_utils import construct_graph, color_graph_by_bitstring
 from hamiltonians_utils import construct_H0, construct_H1
 from prepare_data import zones_data_by_datetime
 
+
+def flux_adj_matrix(attendance_t0, attendance_t1, edges):
+    matrix = np.zeros((len(attendance_t0), len(attendance_t0)))
+    for edge in edges:
+        i, j = edge
+        di = attendance_t1[i] - attendance_t0[i]
+        dj = attendance_t1[j] - attendance_t0[j]
+        matrix[i, j] = matrix[j, i] = np.abs(di/dj) + np.abs(dj/di)
+    return matrix
+
+
+def get_zone_data(datetime, dataset):
+    # Load dataset and parse datetime
+    df = pd.read_csv(dataset)
+    datetime = datetime
+
+    # Get zones data for the specified datetime
+    zones_data = zones_data_by_datetime(df=df, datetime=datetime)
+    print(f"Data zone by zone:\n{zones_data}")
+    return zones_data
+
 # Set backend for qibo
 set_backend("numpy")
+#set_backend("qibojit", platform="cupy")
 
 # Argument parser
 parser = argparse.ArgumentParser(description="Run adiabatic evolution with specified dataset and datetime.")
 parser.add_argument(
     "--datetime",
+    nargs="+",
     type=str,
     required=True,
     help="The datetime string for filtering the dataset, format: 'YYYY-MM-DD HH:MM:SS'."
@@ -32,13 +55,11 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# Load dataset and parse datetime
-df = pd.read_csv(args.dataset)
-datetime = args.datetime
+#breakpoint()
+if len(args.datetime) > 2:
+    raise RuntimeError
 
-# Get zones data for the specified datetime
-zones_data = zones_data_by_datetime(df=df, datetime=datetime)
-print(f"Data zone by zone:\n{zones_data}")
+zones_data = [get_zone_data(datetime, args.dataset) for datetime in args.datetime]
 
 # Define edges for the graph
 edges = [
@@ -56,14 +77,30 @@ edges = [
     (11, 12)
 ]
 
-# Calculate weights based on zones data
-weights = [zones_data[str(int(edge[0])).zfill(3)] + zones_data[str(int(edge[1])).zfill(3)] for edge in edges]
-weights = np.array(weights) / np.max(weights) * 10
+if len(zones_data) == 1:
+    zones_data = zones_data[0]
+    # Calculate weights based on zones data
+    weights = [zones_data[str(int(edge[0])).zfill(3)] + zones_data[str(int(edge[1])).zfill(3)] for edge in edges]
+    weights = np.array(weights) / np.max(weights) * 10
 
-print(f"Weights list: {weights}")
+    print(f"Weights list: {weights}")
 
-# Construct graph and adjacency matrix
-G, adjacency_matrix = construct_graph(edges=edges, weights=weights)
+    # Construct graph and adjacency matrix
+    G, adjacency_matrix = construct_graph(edges=edges, weights=weights)
+
+elif len(zones_data) == 2:
+    attendances = []
+    for z_data in zones_data:
+        attendances.append([z_data[zone] for zone in sorted(z_data.keys())])
+    adjacency_matrix = flux_adj_matrix(*attendances, edges)
+    # Construct graph and adjacency matrix
+    G, _ = construct_graph(edges=edges, weights=None)
+    
+else:
+    raise RuntimeError
+    
+
+
 num_nodes = G.number_of_nodes()
 num_edges = len(G.edges)
 
