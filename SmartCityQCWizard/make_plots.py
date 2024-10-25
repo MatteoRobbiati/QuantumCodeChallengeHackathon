@@ -70,7 +70,7 @@ def plot_one_result(index, dates, dataset):
     else:
         raise RuntimeError
 
-    state = np.load(f"./results/state_{dates[i]}_{dates[i+1]}.npy")
+    state = np.load(f"./results/presenza_15_150924_300924/state_{dates[i]}_{dates[i+1]}.npy")
 
     bitstrings = generate_bitstring_combinations(int(np.log2(len(state))))
     probs = (np.abs(state))**2
@@ -97,5 +97,5 @@ with open(file_path, 'r') as file:
     dates = [line.strip() for line in file.readlines()]
 
 
-for i in range(1,10,1):
+for i in range(1,50,1):
     plot_one_result(i, dates, dataset)
