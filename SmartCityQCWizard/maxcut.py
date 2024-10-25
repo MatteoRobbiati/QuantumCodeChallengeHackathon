@@ -81,7 +81,7 @@ h1 = construct_H1(graph=G, adjacency_matrix=adjacency_matrix)
 # Setup callbacks and evolution
 energy = callbacks.Energy(h1)
 state = callbacks.State(copy=True)
-evo = AdiabaticEvolution(h0=h0, h1=h1, s=lambda t: t, dt=0.02, callbacks=[energy, state])
+evo = AdiabaticEvolution(h0=h0, h1=h1, s=lambda t: t, dt=0.05, callbacks=[energy, state])
 
 # Initial state setup
 c = Circuit(num_nodes)
@@ -92,7 +92,7 @@ print("GS circuit: ", h0.expectation(c().state()))
 
 # Run evolution
 inital_time = time.time()
-evolved = evo(final_time=30, initial_state=c().state())
+evolved = evo(final_time=20, initial_state=c().state())
 print(f"\nTotal evolution time: {time.time() - inital_time}")
 
 # Plot and analyze results
@@ -116,6 +116,9 @@ bitstring_init = max(freq_init, key=lambda k: freq_init[k])
 
 print(f"bitstring best is {bitstring_best} with frequency {freq_best[bitstring_best]}")
 print(f"bitstring init is {bitstring_init} with frequency {freq_best[bitstring_init]}")
+
+# save optimal state
+np.save(arr=np.array(state.results[idx]), file=f"./results/state_{args.datetime}")
 
 # Display top states after optimization
 top_10_dict = dict(sorted(freq_best.items(), key=lambda item: item[1], reverse=True)[:10])
