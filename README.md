@@ -10,10 +10,3 @@ To date, it is possible to collect extensive data on cities. Of particular inter
 
 Our proposal is to frame the problem of road resource allocation as an instance of the well-known MaxCut problem. By dividing the city into regions, we construct a graph where each node represents a neighborhood or district, with edges reflecting the actual adjacency of these urban areas. The weight of each edge is assigned in direct proportion to the traffic intensity between the connected nodes. To estimate traffic levels, we analyze the population difference between nodes over two time intervals and apply a discrete derivative to approximate the traffic flow.
 To optimize road resources and accelerate emergency response, it’s essential to avoid travel along heavily trafficked routes. Therefore, we propose calculating the MaxCut for the city’s graph to split the neighborhoods into two classes that maximize the weight of connecting edges between them. This allows us to allocate road resources between the two classes, minimizing travel time within each.
-
-## How to use
-
-
-
-
-
