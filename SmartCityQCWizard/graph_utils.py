@@ -31,7 +31,7 @@ def color_graph_by_bitstring(G, bitstring, figname, weights):
     # Ensure edges have 'weight' attributes
     edge_labels = nx.get_edge_attributes(G, 'weight')
     if not edge_labels:  # If no weights exist, set default weights to 1
-        edge_labels = {(u, v): weights[u-1][v-1] for u, v in G.edges()}
+        edge_labels = {(u, v): np.round(weights[u][v], decimals=3) for u, v in G.edges()}
 
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, label_pos=0.5, font_size=12)  # label_pos=0.5 places them at the middle of the edges
     
